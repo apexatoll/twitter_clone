@@ -15,7 +15,7 @@ RSpec.describe "StaticPages", type: :request do
     end
     it "should have the right title" do
       get "/static_pages/home"
-      expect(response.body).to have_title("Home | #{base_title}")
+      expect(response.body).to have_title(base_title)
     end
   end
 
