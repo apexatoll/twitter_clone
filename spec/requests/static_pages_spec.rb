@@ -45,4 +45,15 @@ RSpec.describe "StaticPages", type: :request do
       expect(response.body).to have_title("Contact | #{base_title}")
     end
   end
+
+  describe "GET /signup" do
+    it "returns http success" do
+      get signup_path
+      expect(response).to have_http_status(:success)
+    end
+    it "should have the right title" do
+      get signup_path
+      expect(response.body).to have_title("Sign up | #{base_title}")
+    end
+  end
 end
