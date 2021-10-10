@@ -1,27 +1,28 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  describe "creating a user" do
-    def create(name:nil, email:nil)
-      User.new(name:name, email:email)
+  describe "#valid?" do
+    let(:valid_user){ User.new(name:"test", email:"a@b.com") }
+    def user_with_name_valid?(name)
+      valid_user.tap{|u| u.name = name}.valid?
+    end
+    def user_with_email_valid?(email)
+      valid_user.tap{|u| u.email = email}.valid?
+    end
+    context "when valid data passed" do
+      it "returns true" do
+        expect(valid_user.valid?).to be(true)
+      end
     end
     describe "field presence" do
-      context "when name and email present" do
-        it "is valid" do
-          user = create(name:"example", email:"a@b.com")
-          expect(user.valid?).to be(true)
-        end
-      end
       context "when name is omitted" do
-        it "is invalid" do
-          user = create(email:"a@b.com")
-          expect(user.valid?).to_not be(true)
+        it "returns false" do
+          expect(user_with_email_valid?(nil)).to be(false)
         end
       end
       context "when email is omitted" do
-        it "is invalid" do
-          user = create(name:"example")
-          expect(user.valid?).to_not be(true)
+        it "returns false" do
+          expect(user_with_name_valid?(nil)).to be(false)
         end
       end
     end
@@ -29,11 +30,10 @@ RSpec.describe User, type: :model do
       let(:max_name){ 50 }
       let(:max_email){ 255 }
       context "name is longer than maximum characters" do
-        it "is invalid" do
+        it "returns false" do
           name = "a" * (max_name + 1)
           expect(name.length).to eq(51)
-          user = create(name:name, email:"test@test.com")
-          expect(user.valid?).to_not be(true)
+          expect(user_with_name_valid?(name)).to be(false)
         end
       end
       context "email is longer than maximum characters" do
@@ -41,10 +41,47 @@ RSpec.describe User, type: :model do
           post  = "@test.com"
           "#{"a" * (max_email - (post.length) + 1)}#{post}"
         end
-        it "is invalid" do
+        it "returns false" do
           expect(email.length).to eq(256)
-          user = create(name:"test", email:email)
-          expect(user.valid?).to_not be(true)
+          expect(user_with_email_valid?(email)).to be(false)
+        end
+      end
+    end
+    describe "email validity" do
+      let(:user){ User.new(name:"test", email:"test@t.com") }
+      context "when email is in correct format" do
+        def valid_emails
+          [
+           "test@test.com", 
+           "another-test@test.com", 
+           "TEST@TEST.foo.com", 
+           "test@foo.jp", 
+           "foo+bar@baz.com"
+          ]
+        end
+        it "returns true" do
+          valid_emails.each do |email|
+            expect(user_with_email_valid?(email)).to be(true),
+              "valid address #{email} fails"
+          end
+        end
+      end
+      context "when email is in invalid format" do
+        def invalid_emails
+          [
+            "test@test,com", 
+            "test_at_test.com", 
+            "test@testcom",
+            "test@foo_bar.com", 
+            "foo@bar+baz.com"
+          ]
+        end
+        it "returns false" do
+          invalid_emails.each do |email|
+            expect(user_with_email_valid?(email))
+              .to be(false), 
+              "invalid address #{email} passes"
+          end
         end
       end
     end
