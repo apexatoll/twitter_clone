@@ -1,17 +1,20 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  subject do
+    User.new(name:"test", email:"a@b.com", 
+             password:"foobar", password_confirmation:"foobar")
+  end
   describe "#valid?" do
-    let(:valid_user){ User.new(name:"test", email:"a@b.com") }
     def user_with_name_valid?(name)
-      valid_user.tap{|u| u.name = name}.valid?
+      subject.tap{|u| u.name = name}.valid?
     end
     def user_with_email_valid?(email)
-      valid_user.tap{|u| u.email = email}.valid?
+      subject.tap{|u| u.email = email}.valid?
     end
     context "when valid data passed" do
       it "returns true" do
-        expect(valid_user.valid?).to be(true)
+        expect(subject.valid?).to be(true)
       end
     end
     describe "field presence" do
@@ -89,16 +92,16 @@ RSpec.describe User, type: :model do
       context "when duplicate email passed" do
         context "and identical casing" do
           it "returns false" do
-            duplicate = valid_user.dup
-            valid_user.save
+            duplicate = subject.dup
+            subject.save
             expect(duplicate.valid?).to be(false)
           end
         end
         context "and different casing" do
           it "returns false" do
-            duplicate = valid_user.dup
+            duplicate = subject.dup
               .tap{|u| u.email.upcase! }
-            valid_user.save
+            subject.save
             expect(duplicate.valid?).to be(false)
           end
         end
@@ -110,7 +113,7 @@ RSpec.describe User, type: :model do
       context "when variable case email is passed" do
         it "saves as lowercase" do
           email = "TesT@TEst.COM"
-          user  = User.new(name:"test", email:email)
+          user  = subject.tap{|u| u.email = email}
           expect(user.tap{|u| u.save}.email)
             .to eql(email.downcase)
         end
