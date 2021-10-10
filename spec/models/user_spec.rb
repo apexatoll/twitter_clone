@@ -105,4 +105,16 @@ RSpec.describe User, type: :model do
       end
     end
   end
+  describe "#save" do
+    describe "email addressess should be case insensitive" do
+      context "when variable case email is passed" do
+        it "saves as lowercase" do
+          email = "TesT@TEst.COM"
+          user  = User.new(name:"test", email:email)
+          expect(user.tap{|u| u.save}.email)
+            .to eql(email.downcase)
+        end
+      end
+    end
+  end
 end
