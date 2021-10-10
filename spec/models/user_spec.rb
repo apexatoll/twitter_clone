@@ -85,5 +85,24 @@ RSpec.describe User, type: :model do
         end
       end
     end
+    describe "email uniqueness" do
+      context "when duplicate email passed" do
+        context "and identical casing" do
+          it "returns false" do
+            duplicate = valid_user.dup
+            valid_user.save
+            expect(duplicate.valid?).to be(false)
+          end
+        end
+        context "and different casing" do
+          it "returns false" do
+            duplicate = valid_user.dup
+              .tap{|u| u.email.upcase! }
+            valid_user.save
+            expect(duplicate.valid?).to be(false)
+          end
+        end
+      end
+    end
   end
 end
