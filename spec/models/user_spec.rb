@@ -6,12 +6,6 @@ RSpec.describe User, type: :model do
              password:"foobar", password_confirmation:"foobar")
   end
   describe "#valid?" do
-    def user_with_name_valid?(name)
-      subject.tap{|u| u.name = name}.valid?
-    end
-    def user_with_email_valid?(email)
-      subject.tap{|u| u.email = email}.valid?
-    end
     context "when valid data passed" do
       it "returns true" do
         expect(subject.valid?).to be(true)
@@ -106,6 +100,38 @@ RSpec.describe User, type: :model do
           end
         end
       end
+    end
+    describe "password security" do
+      let(:password_valid){ user_with_password_valid?(password) }
+      context "when password is >= 6 characters" do
+        let(:password){ "a" * 6 }
+        it "returns true" do
+          expect(password_valid).to be(true)
+        end
+      end
+      context "when password is < 6 characters" do
+        let(:password){ "a" * 5 }
+        it "returns false" do
+          expect(password_valid).to be(false)
+        end
+      end
+      context "when password is blank" do
+        let(:password){ " " * 6 }
+        it "returns false" do
+          expect(password_valid).to be(false)
+        end
+      end
+    end
+    def user_with_name_valid?(name)
+      subject.tap{|u| u.name = name}.valid?
+    end
+    def user_with_email_valid?(email)
+      subject.tap{|u| u.email = email}.valid?
+    end
+    def user_with_password_valid?(password)
+      subject.tap do |u| 
+        u.password = u.password_confirmation = password
+      end.valid?
     end
   end
   describe "#save" do
