@@ -1,24 +1,6 @@
-# README
+# Twitter Clone
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- A simple Twitter clone built in Ruby on Rails
+- Based on the exercises described in Michael Hartl's excellent [tutorial series](https://www.learnenough.com/ruby-on-rails-6th-edition)
+- I decided to extend the automated testing further than was outlined in the tutorial series so I could get more up to speed with testing in general, employ some test driven development (TDD) and to get more familiar with RSpec
+- To run tests clone the directory and run `bundle exec rspec`
