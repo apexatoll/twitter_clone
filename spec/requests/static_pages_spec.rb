@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "StaticPages", type: :request do
-  let(:base_title){ "RoR Sample App" }
+  let(:base_title){ "RoR Twitter Clone" }
   describe "GET root" do
     it "returns http success" do
       get root_path
