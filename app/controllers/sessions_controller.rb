@@ -3,7 +3,9 @@ class SessionsController < ApplicationController
   end
   def create
     if valid_credentials?
-      #log the user in and redirect to user's show page
+      reset_session
+      log_in @user
+      redirect_to @user
     else
       flash.now[:danger] = "Invalid email/password combination"
       render 'new'
