@@ -60,6 +60,9 @@ RSpec.describe "user login", type: :request do
       it "redirects to user overview page" do
         expect(response).to redirect_to(user)
       end
+      it "logs in" do
+        expect(is_logged_in?).to be(true)
+      end
       context "following redirect" do
         before{ follow_redirect! }
         it "renders the correct template" do
@@ -74,6 +77,53 @@ RSpec.describe "user login", type: :request do
         it "shows user profile links" do
           assert_select "a[href=?]", user_path(user)
         end
+      end
+    end
+    context "when valid email but invalid password" do
+      fixtures :users
+      before{ @user = users(:example) }
+      let(:credentials) do
+        {
+          email:@user.email,
+          password:'invalid'
+        }
+      end
+      it "does not log in" do
+        post login_path, params:{ session:credentials }
+        expect(is_logged_in?).to be(false)
+      end
+    end
+  end
+  describe "DELETE /logout" do
+    fixtures :users
+    before do
+      @user = users(:example)
+      post login_path, params:{ session:credentials }
+      expect(is_logged_in?).to be(true)
+      delete logout_path
+    end
+    let(:credentials) do
+      {
+        email:@user.email,
+        password:"password"
+      }
+    end
+    it "redirects to the home page" do
+      expect(response).to redirect_to(root_path)
+    end
+    it "logs out" do
+      expect(is_logged_in?).to be(false)
+    end
+    describe "following redirect" do
+      before{ follow_redirect! }
+      it "shows login links" do
+        assert_select "a[href=?]", login_path
+      end
+      it "does not show logout links" do
+        assert_select "a[href=?]", logout_path, count:0
+      end
+      it "does not show user profile links" do
+        assert_select "a[href=?]", user_path(@user), count:0
       end
     end
   end
