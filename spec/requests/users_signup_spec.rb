@@ -66,6 +66,9 @@ RSpec.describe "User sign up", type: :request do
         it "does not show any flash errors" do
           expect(flash[:errors]).to be_nil
         end
+        it "signs the user in" do
+          expect(is_logged_in?).to be(true)
+        end
       end
     end
   end
