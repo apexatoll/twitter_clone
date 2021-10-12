@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "user login" do
+RSpec.describe "user login", type: :request do
   describe "GET /login" do
     before do
       get login_path
@@ -21,7 +21,7 @@ RSpec.describe "user login" do
     end
   end
   describe "POST /login" do
-    context "when incorrect login details are provided" do
+    context "when invalid login details are provided" do
       let(:invalid_credentials) do
         {
           email:"fake@fake.com",
@@ -41,6 +41,38 @@ RSpec.describe "user login" do
         it "does not persist the error flash" do
           get root_path
           expect(flash[:danger]).to be_nil
+        end
+      end
+    end
+    context "when valid login details are provided" do
+      fixtures :users
+      let(:user){ users(:example) }
+      let(:credentials) do
+        {
+          email: user.email,
+          password: 'password'
+        }
+      end
+      let(:params){ { session:credentials } }
+
+      before{ post login_path, params:params }
+
+      it "redirects to user overview page" do
+        expect(response).to redirect_to(user)
+      end
+      context "following redirect" do
+        before{ follow_redirect! }
+        it "renders the correct template" do
+          expect(response).to render_template("users/show")
+        end
+        it "shows no login links" do
+          assert_select "a[href=?]", login_path, count:0
+        end
+        it "shows logout links" do
+          assert_select "a[href=?]", logout_path
+        end
+        it "shows user profile links" do
+          assert_select "a[href=?]", user_path(user)
         end
       end
     end
