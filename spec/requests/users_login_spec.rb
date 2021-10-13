@@ -125,6 +125,11 @@ RSpec.describe "user login", type: :request do
       it "does not show user profile links" do
         assert_select "a[href=?]", user_path(@user), count:0
       end
+      context "when multiple logouts attempted from separate browsers" do
+        it "does not raise an exception" do
+          expect{ delete logout_path }.to_not raise_exception
+        end
+      end
     end
   end
 end

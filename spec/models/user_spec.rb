@@ -14,12 +14,12 @@ RSpec.describe User, type: :model do
     describe "field presence" do
       context "when name is omitted" do
         it "returns false" do
-          expect(user_with_email_valid?(nil)).to be(false)
+          expect(is_user_with_this_email_valid?(nil)).to be(false)
         end
       end
       context "when email is omitted" do
         it "returns false" do
-          expect(user_with_name_valid?(nil)).to be(false)
+          expect(is_user_with_this_name_valid?(nil)).to be(false)
         end
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe User, type: :model do
         it "returns false" do
           name = "a" * (max_name + 1)
           expect(name.length).to eq(51)
-          expect(user_with_name_valid?(name)).to be(false)
+          expect(is_user_with_this_name_valid?(name)).to be(false)
         end
       end
       context "email is longer than maximum characters" do
@@ -40,7 +40,7 @@ RSpec.describe User, type: :model do
         end
         it "returns false" do
           expect(email.length).to eq(256)
-          expect(user_with_email_valid?(email)).to be(false)
+          expect(is_user_with_this_email_valid?(email)).to be(false)
         end
       end
     end
@@ -58,7 +58,7 @@ RSpec.describe User, type: :model do
         end
         it "returns true" do
           valid_emails.each do |email|
-            expect(user_with_email_valid?(email)).to be(true),
+            expect(is_user_with_this_email_valid?(email)).to be(true),
               "valid address #{email} fails"
           end
         end
@@ -75,7 +75,7 @@ RSpec.describe User, type: :model do
         end
         it "returns false" do
           invalid_emails.each do |email|
-            expect(user_with_email_valid?(email))
+            expect(is_user_with_this_email_valid?(email))
               .to be(false), 
               "invalid address #{email} passes"
           end
@@ -102,7 +102,7 @@ RSpec.describe User, type: :model do
       end
     end
     describe "password security" do
-      let(:password_valid){ user_with_password_valid?(password) }
+      let(:password_valid){ is_user_with_this_password_valid?(password) }
       context "when password is >= 6 characters" do
         let(:password){ "a" * 6 }
         it "returns true" do
@@ -122,13 +122,13 @@ RSpec.describe User, type: :model do
         end
       end
     end
-    def user_with_name_valid?(name)
+    def is_user_with_this_name_valid?(name)
       subject.tap{|u| u.name = name}.valid?
     end
-    def user_with_email_valid?(email)
+    def is_user_with_this_email_valid?(email)
       subject.tap{|u| u.email = email}.valid?
     end
-    def user_with_password_valid?(password)
+    def is_user_with_this_password_valid?(password)
       subject.tap do |u| 
         u.password = u.password_confirmation = password
       end.valid?
@@ -144,6 +144,11 @@ RSpec.describe User, type: :model do
             .to eql(email.downcase)
         end
       end
+    end
+  end
+  describe "#authenticated?" do
+    it "returns false for a user with digest set to nil" do
+      expect(subject.authenticated?("")).to be(false)
     end
   end
 end
