@@ -93,6 +93,31 @@ RSpec.describe "user login", type: :request do
         expect(is_logged_in?).to be(false)
       end
     end
+    describe "remember me functionality" do
+      fixtures :users
+      let(:user){ users(:example) }
+      def credentials(remember:) 
+        { 
+          session: {
+            email:user.email,
+            password:'password',
+            remember_me: remember ? '1' : '0'
+          }
+        }
+      end
+      context "with remembering set to true" do
+        it "sets the persisting cookie" do
+          post login_path, params: credentials(remember:true) 
+          expect(cookies[:remember_token]).to_not be_nil
+        end
+      end
+      context "with remembering set to false" do
+        it "does not set the persisting cookie" do
+          post login_path, params: credentials(remember:false) 
+          expect(cookies[:remember_token]).to be_nil
+        end
+      end
+    end
   end
   describe "DELETE /logout" do
     fixtures :users
