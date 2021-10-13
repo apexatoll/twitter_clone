@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   def create
     if valid_credentials?
       reset_session
-      remember @user
+      handle_remember_me
       log_in @user
       redirect_to @user
     else
@@ -25,5 +25,10 @@ class SessionsController < ApplicationController
   end
   def correct_password?
     @user.authenticate(params[:session][:password])
+  end
+  def handle_remember_me
+    params[:session][:remember_me] == '1' ?
+      remember(@user) :
+      forget(@user)
   end
 end
