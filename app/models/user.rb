@@ -30,6 +30,10 @@ class User < ApplicationRecord
 			.is_password?(token)
 	end
 
+	def forget
+		update_attribute(:remember_digest, nil)
+	end
+
 	class << self
 		def digest(password)
 			cost = ActiveModel::SecurePassword.min_cost ?
