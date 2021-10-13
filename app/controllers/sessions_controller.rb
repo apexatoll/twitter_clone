@@ -4,6 +4,7 @@ class SessionsController < ApplicationController
   def create
     if valid_credentials?
       reset_session
+      remember @user
       log_in @user
       redirect_to @user
     else

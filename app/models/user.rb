@@ -1,28 +1,45 @@
 class User < ApplicationRecord
-  before_save { self.email.downcase! }
+	VALID_EMAIL_REGEX = /\A[\w+_.-]+@[a-z.-]+\.[\w]+\z/i
 
-  VALID_EMAIL_REGEX = /\A[\w+_.-]+@[a-z.-]+\.[\w]+\z/i
+	before_save { self.email.downcase! }
+	has_secure_password
 
-  validates :name, 
-    presence:true, 
-    length:{ maximum:50 }
+	attr_reader :remember_token
 
-  validates :email, 
-    presence:true, 
-    length:{ maximum:255 }, 
-    format:{ with:VALID_EMAIL_REGEX },
-    uniqueness:{ case_sensitive:false }
+	validates :name, 
+		presence:true, 
+		length:{ maximum:50 }
 
-  validates :password,
-    presence:true,
-    length:{ minimum:6 }
+	validates :email, 
+		presence:true, 
+		length:{ maximum:255 }, 
+		format:{ with:VALID_EMAIL_REGEX },
+		uniqueness:{ case_sensitive:false }
 
-  has_secure_password
-  
-  def self.digest(password)
-    cost = ActiveModel::SecurePassword.min_cost ?
-      BCrypt::Engine::MIN_COST :
-      BCrypt::Engine.cost
-    BCrypt::Password.create(password, cost:cost)
-  end
+	validates :password,
+		presence:true,
+		length:{ minimum:6 }
+
+	def remember
+		@remember_token = self.class.new_token
+		update_attribute(:remember_digest, self.class.digest(remember_token))
+	end
+
+	def authenticated?(token)
+		BCrypt::Password.new(remember_digest)
+			.is_password?(token)
+	end
+
+	class << self
+		def digest(password)
+			cost = ActiveModel::SecurePassword.min_cost ?
+				BCrypt::Engine::MIN_COST :
+				BCrypt::Engine.cost
+			BCrypt::Password.create(password, cost:cost)
+		end
+
+		def new_token
+			SecureRandom.urlsafe_base64
+		end
+	end
 end
