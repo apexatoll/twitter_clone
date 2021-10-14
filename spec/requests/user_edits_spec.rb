@@ -27,19 +27,24 @@ RSpec.describe "User edits", type: :request do
   end
 
   describe "PATCH /user/:id" do
+    def user_with_params(name:"Updated Name", email:"foo@bar.com", password:"", password_confirmation:"")
+      {
+        user: {
+          name: name,
+          email: email,
+          password: password,
+          password_confirmation: password_confirmation
+        }
+      }
+    end
     context "unsuccessful edit" do
       let(:user_params) do
-        {
-          user: {
-            name: "",
-            email: "foo@invalid",
-            password:" foo",
-            password_confirmation: "bar"
-          }
-        }
+        user_with_params(
+          name:"", email:"foo@invalid", 
+          password:"foo", password_confirmation:"bar")
       end
       before{ patch user_path(user), params:user_params }
-      it "renders the edit form" do
+      it "rerenders the edit form" do
         expect(response).to render_template("users/edit")
       end
       it "renders the correct number of errors" do
@@ -52,7 +57,20 @@ RSpec.describe "User edits", type: :request do
         expect(user.name).to eq(name)
         expect(user.email).to eq(email)
       end
-
+    end
+    context "successful edit" do
+      before{ patch user_path(user), params:user_with_params }
+      it "renders a flash message" do
+        expect(flash[:success]).to_not be_empty
+      end
+      it "redirects to the user page" do
+        expect(response).to redirect_to(user)
+      end
+      it "updates the user information" do
+        user.reload
+        expect(user.name).to eql("Updated Name")
+        expect(user.email).to eql("foo@bar.com")
+      end
     end
   end
 end

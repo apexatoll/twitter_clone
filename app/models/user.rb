@@ -18,7 +18,8 @@ class User < ApplicationRecord
 
 	validates :password,
 		presence:true,
-		length:{ minimum:6 }
+		length:{ minimum:6 },
+		allow_nil:true
 
 	def remember
 		@remember_token = self.class.new_token
