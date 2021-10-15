@@ -4,29 +4,43 @@ RSpec.describe "User edits", type: :request do
   fixtures :users
   before do 
     @user = users(:example)
+    @other_user = users(:another)
   end
-
   describe "GET /user/:id" do
     context "when logged in" do
-      before do 
-        log_in_as @user
-        get edit_user_path(@user)
+      context "as correct user" do
+        before do 
+          log_in_as @user
+          get edit_user_path(@user)
+        end
+        it "responds with 200" do
+          expect(response.status).to eq(200)
+        end
+        it "renders the right template" do
+          expect(response).to render_template("users/edit")
+        end
+        it "populates the name input" do
+          assert_select "input[name=?]", "user[name]", value: "Example User"
+        end
+        it "populates the email input" do
+          assert_select "input[name=?]", "user[name]", value: "user@example.com"
+        end
+        it "does not populate the password fields" do
+          assert_select "input[name=?]", "user[password]", value:nil
+          assert_select "input[name=?]", "user[password_confirmation]", value:nil
+        end
       end
-      it "responds with 200" do
-        expect(response.status).to eq(200)
-      end
-      it "renders the right template" do
-        expect(response).to render_template("users/edit")
-      end
-      it "populates the name input" do
-        assert_select "input[name=?]", "user[name]", value: "Example User"
-      end
-      it "populates the email input" do
-        assert_select "input[name=?]", "user[name]", value: "user@example.com"
-      end
-      it "does not populate the password fields" do
-        assert_select "input[name=?]", "user[password]", value:nil
-        assert_select "input[name=?]", "user[password_confirmation]", value:nil
+      context "as incorrect user" do
+        before do 
+          log_in_as @other_user
+          get edit_user_path(@user)
+        end
+        it "redirects to root" do
+          expect(response).to redirect_to(root_url)
+        end
+        it "does not show an error" do
+          expect(flash[:danger]).to be_nil
+        end
       end
     end
     context "when not logged in" do
@@ -88,6 +102,28 @@ RSpec.describe "User edits", type: :request do
           expect(@user.name).to eql("Updated Name")
           expect(@user.email).to eql("foo@bar.com")
         end
+      end
+    end
+    context "when logged in as wrong user" do
+      before do
+        log_in_as @other_user
+        patch user_path(@user), params:user_params
+      end
+      let(:user_params) do
+        user_with_params(
+          name:"Updated Name", email:"foo@bar.com")
+      end
+      it "redirects to root" do
+        expect(response).to redirect_to(root_url)
+      end
+      it "does not change the database" do
+        name, email = @user.name, @user.email
+        @user.reload
+        expect(@user.name).to eql(name)
+        expect(@user.email).to eql(email)
+      end
+      it "shows no errors" do
+        expect(flash[:danger]).to be_nil
       end
     end
   end

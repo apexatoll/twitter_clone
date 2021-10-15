@@ -24,6 +24,7 @@ class User < ApplicationRecord
 	def remember
 		@remember_token = self.class.new_token
 		update_attribute(:remember_digest, self.class.digest(remember_token))
+		remember_digest
 	end
 
 	def authenticated?(token)
@@ -34,6 +35,10 @@ class User < ApplicationRecord
 
 	def forget
 		update_attribute(:remember_digest, nil)
+	end
+
+	def session_token
+		remember_digest || remember
 	end
 
 	class << self
