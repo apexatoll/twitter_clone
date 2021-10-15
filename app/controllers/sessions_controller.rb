@@ -3,10 +3,11 @@ class SessionsController < ApplicationController
   end
   def create
     if valid_credentials?
+      forwarding_url = session[:forwarding_url]
       reset_session
       handle_remember_me
       log_in @user
-      redirect_to @user
+      redirect_to forwarding_url || @user
     else
       flash.now[:danger] = "Invalid email/password combination"
       render 'new'

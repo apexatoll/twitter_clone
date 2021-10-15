@@ -126,5 +126,12 @@ RSpec.describe "User edits", type: :request do
         expect(flash[:danger]).to be_nil
       end
     end
+    describe "friendly forwarding" do
+      it "redirects to previous page" do
+        get edit_user_path(@user)
+        log_in_as(@user)
+        expect(response).to redirect_to(edit_user_url(@user))
+      end
+    end
   end
 end

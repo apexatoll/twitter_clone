@@ -38,6 +38,9 @@ module SessionsHelper
   def current_user?(user)
     user && user == current_user
   end
+  def store_location
+    session[:forwarding_url] = request.original_url if request.get?
+  end
   private
   def find_user_by_id(id)
     User.find_by(id:id)
