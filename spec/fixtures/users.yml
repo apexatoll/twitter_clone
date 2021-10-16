@@ -3,6 +3,12 @@ example:
   email: user@example.com
   password_digest: <%= User.digest('password') %>
 
+admin: 
+  name: Admin User
+  email: admin@rails.com
+  password_digest: <%= User.digest('password') %>
+  admin: true
+
 another:
   name: Another User
   email: another@example.com
