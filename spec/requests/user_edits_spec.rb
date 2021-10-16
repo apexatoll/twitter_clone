@@ -66,6 +66,16 @@ RSpec.describe "User edits", type: :request do
         }
       }
     end
+    describe "admin attribute" do
+      it "sets admin to false by default" do
+        expect(@other_user).to_not be_admin
+      end
+      it "prevents admin attribute to be edited via the web" do
+        log_in_as @other_user
+        patch user_path(@other_user), params:{ user: { admin:true } }
+        expect(@other_user).to_not be_admin
+      end
+    end
     context "when logged in" do
       before{ log_in_as @user }
       context "unsuccessful edit" do
