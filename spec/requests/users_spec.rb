@@ -32,4 +32,13 @@ RSpec.describe "Users", type: :request do
       pending
     end
   end
+  describe "GET /users" do
+    context "when not logged in" do
+      it "redirects to login page" do
+        get users_path
+        expect(response).to redirect_to(login_url)
+      end
+    end
+    context "when logged in"
+  end
 end
