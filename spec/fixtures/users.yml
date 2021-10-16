@@ -2,21 +2,29 @@ example:
   name: Example User
   email: user@example.com
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 admin: 
   name: Admin User
   email: admin@rails.com
   password_digest: <%= User.digest('password') %>
   admin: true
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 another:
   name: Another User
   email: another@example.com
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 
 <% 30.times do |i| %>
 user_<%= i %>: 
   name: <%= "User #{i}" %>
   email: <%= "user-#{i}@example.com" %>
   password_digest: <%= User.digest('password') %>
+  activated: true
+  activated_at: <%= Time.zone.now %>
 <% end %>

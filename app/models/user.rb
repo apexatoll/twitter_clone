@@ -1,10 +1,10 @@
 class User < ApplicationRecord
 	VALID_EMAIL_REGEX = /\A[\w+_.-]+@[a-z.-]+\.[\w]+\z/i
-
-	before_save { self.email.downcase! }
 	has_secure_password
 
-	attr_reader :remember_token
+	before_save   :downcase_email
+	before_create :create_activation_digest
+	attr_reader   :remember_token, :activation_token
 
 	validates :name, 
 		presence:true, 
@@ -26,21 +26,17 @@ class User < ApplicationRecord
 		update_attribute(:remember_digest, self.class.digest(remember_token))
 		remember_digest
 	end
-
 	def authenticated?(token)
 		return false if remember_digest.nil?
 		BCrypt::Password.new(remember_digest)
 			.is_password?(token)
 	end
-
 	def forget
 		update_attribute(:remember_digest, nil)
 	end
-
 	def session_token
 		remember_digest || remember
 	end
-
 	class << self
 		def digest(password)
 			cost = ActiveModel::SecurePassword.min_cost ?
@@ -52,5 +48,13 @@ class User < ApplicationRecord
 		def new_token
 			SecureRandom.urlsafe_base64
 		end
+	end
+	private
+	def create_activation_digest
+		@activation_token  = self.class.new_token
+		self.activation_digest = self.class.digest(activation_token)
+	end
+	def downcase_email
+		self.email.downcase!
 	end
 end
