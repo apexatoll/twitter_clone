@@ -5,7 +5,6 @@ class User < ApplicationRecord
 	before_save   :downcase_email
 	before_create :create_activation_digest
 	attr_accessor :remember_token, :activation_token
-	attr_accessor :remember_digest, :activation_digest
 
 	validates :name, 
 		presence:true, 
