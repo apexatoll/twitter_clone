@@ -148,7 +148,7 @@ RSpec.describe User, type: :model do
   end
   describe "#authenticated?" do
     it "returns false for a user with digest set to nil" do
-      expect(subject.authenticated?("")).to be(false)
+      expect(subject.authenticated?(:remember, "")).to be(false)
     end
   end
 end
