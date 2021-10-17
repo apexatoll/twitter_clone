@@ -59,7 +59,17 @@ class User < ApplicationRecord
 	end
 
 	def send_password_reset_email
-		UserMailer.password_reset.deliver_now
+		UserMailer.password_reset(self).deliver_now
+	end
+
+	private
+	def create_activation_digest
+		@activation_token  = self.class.new_token
+		self.activation_digest = self.class.digest(activation_token)
+	end
+
+	def downcase_email
+		self.email.downcase!
 	end
 
 	class << self
@@ -72,15 +82,5 @@ class User < ApplicationRecord
 		def new_token
 			SecureRandom.urlsafe_base64
 		end
-	end
-
-	private
-	def create_activation_digest
-		@activation_token  = self.class.new_token
-		self.activation_digest = self.class.digest(activation_token)
-	end
-
-	def downcase_email
-		self.email.downcase!
 	end
 end
