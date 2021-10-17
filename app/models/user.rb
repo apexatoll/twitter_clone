@@ -37,6 +37,13 @@ class User < ApplicationRecord
 	def session_token
 		remember_digest || remember
 	end
+	def activate
+		update_attribute(:activated, true)
+		update_attribute(:activated_at, Time.zone.now)
+	end
+	def send_activation_email
+		UserMailer.account_activation(self).deliver_now
+	end
 	class << self
 		def digest(password)
 			cost = ActiveModel::SecurePassword.min_cost ?
