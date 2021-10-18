@@ -18,3 +18,10 @@ User.create!(
     activated_at: Time.zone.now
   )
 end
+
+50.times do
+  User.take(6).each do |u|
+    u.microposts.create!(
+      content:Faker::Lorem.sentence(word_count:5))
+  end
+end
