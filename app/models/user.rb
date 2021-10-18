@@ -3,6 +3,8 @@ class User < ApplicationRecord
 	VALID_EMAIL_REGEX = /\A[\w+_.-]+@[a-z.-]+\.[\w]+\z/i
 
 	has_secure_password
+
+	has_many      :microposts
 	before_save   :downcase_email
 	before_create :create_activation_digest
 	attr_accessor :remember_token, :activation_token, :reset_token
