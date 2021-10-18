@@ -66,6 +66,10 @@ class User < ApplicationRecord
 		reset_sent_at < 2.hours.ago
 	end
 
+	def clear_reset_digest
+		update_attribute(:reset_digest, nil)
+	end
+
 	private
 	def create_activation_digest
 		@activation_token  = self.class.new_token
