@@ -17,3 +17,10 @@ older_post:
   content: "This is the oldest post"
   created_at: <%= 2.years.ago %>
   user: admin
+
+<% 30.times do |i| %>
+micropost_<%= i %>:
+  content: <%= Faker::Lorem.sentence(5) %>
+  created_at: <%= 42.days.ago %>
+  user: admin
+<% end %>
