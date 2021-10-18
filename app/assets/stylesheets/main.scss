@@ -207,8 +207,13 @@ input {
 	margin-left:0;
 }
 
-//Users index
+//Pagination
+.pagination {
+	display:flex;
+	justify-content:center;
+}
 
+//Users index
 .users {
 	list-style:none;
 	margin:0;
