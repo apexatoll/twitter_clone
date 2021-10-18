@@ -32,4 +32,10 @@ RSpec.describe Micropost, type: :model do
       end
     end
   end
+  describe "order" do
+    fixtures :microposts
+    it "is from most recent to oldest" do
+      expect(microposts(:most_recent)).to eq(Micropost.first)
+    end
+  end
 end
