@@ -4,7 +4,7 @@ class User < ApplicationRecord
 
 	has_secure_password
 
-	has_many      :microposts
+	has_many      :microposts, dependent: :destroy
 	before_save   :downcase_email
 	before_create :create_activation_digest
 	attr_accessor :remember_token, :activation_token, :reset_token

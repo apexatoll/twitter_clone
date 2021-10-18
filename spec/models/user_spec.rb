@@ -151,4 +151,11 @@ RSpec.describe User, type: :model do
       expect(subject.authenticated?(:remember, "")).to be(false)
     end
   end
+  describe "#destroy" do
+    it "deletes associated microposts" do
+      subject.save
+      subject.microposts.create!(content: "Lorem ipsum")
+      expect{ subject.destroy }.to change{ Micropost.count }.by(-1)
+    end
+  end
 end
