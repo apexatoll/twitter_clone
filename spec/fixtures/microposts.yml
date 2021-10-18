@@ -20,7 +20,7 @@ older_post:
 
 <% 30.times do |i| %>
 micropost_<%= i %>:
-  content: <%= Faker::Lorem.sentence(5) %>
+  content: <%= Faker::Lorem.sentence(word_count:5) %>
   created_at: <%= 42.days.ago %>
   user: admin
 <% end %>
