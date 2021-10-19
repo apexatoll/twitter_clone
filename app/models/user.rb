@@ -72,6 +72,10 @@ class User < ApplicationRecord
 		update_attribute(:reset_digest, nil)
 	end
 
+	def feed
+		Micropost.where("user_id = ?", id)
+	end
+
 	private
 	def create_activation_digest
 		@activation_token  = self.class.new_token
